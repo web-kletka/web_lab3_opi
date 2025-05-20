@@ -1,14 +1,9 @@
-<project name="web-lab3" default="war" basedir="."
+<project name="web-lab3" basedir="."
          xmlns:ivy="antlib:org.apache.ivy.ant">
-    <!-- Определение свойств -->
-    <property name="src.dir" value="src/main/java"/>
-    <property name="webapp.dir" value="src/main/webapp"/>
-    <property name="build.dir" value="build"/>
-    <property name="classes.dir" value="${build.dir}/classes"/>
-    <property name="lib.dir" value="lib"/>
-    <property name="war.file" value="${build.dir}/web-lab3.war"/>
 
-    <property name="ivy.install.version" value="2.5.2"/>
+    <property file="build.properties"/>
+    <!-- Определение свойств -->
+
     <path id="ivy.lib.path">
         <pathelement location="${basedir}/lib/ivy-2.5.2.jar"/>
     </path>
@@ -44,14 +39,45 @@
         </javac>
     </target>
 
-    <!-- Сборка WAR -->
-    <target name="war" depends="compile" description="Создаёт WAR-файл">
+
+    <!-- BUILD -->
+    <target name="sad_build" depends="compile">
+        <echo message="----- BUILD STARTED -----"/>
+        <copy todir="${build.dir}">
+            <fileset dir="${webapp.dir}"/>
+        </copy>
+        <copy todir="${build.dir.lib}">
+            <fileset dir="${lib.dir}"/>
+        </copy>
+        <copy todir="${classes.dir}">
+            <fileset dir="${resources.dir}"/>
+        </copy>
+        <manifest file="${build.manifest.dir}">
+            <attribute name="Created-By" value="Kanye West"/>
+            <attribute name="Manifest-Version" value="1.0"/>
+            <attribute name="Main-Class" value="NoClass"/>
+        </manifest>
+        <jar destfile="${build.dir}/${ant.project.name}.jar" manifest="${build.manifest.dir}">
+            <fileset dir="${classes.dir}"/>
+        </jar>
         <war destfile="${war.file}" webxml="${webapp.dir}/WEB-INF/web.xml">
             <fileset dir="${webapp.dir}"/>
             <lib dir="${lib.dir}/compile"/>
             <classes dir="${classes.dir}"/>
         </war>
+
+        <echo message="----- BUILD COMPLETED -----"/>
     </target>
+
+    <!-- Музыка -->
+    <target name="music">
+        <echo message="----- BUILD COMPLETED! Starting music... -----"/>
+        <exec executable="mpg123" osfamily="unix">
+            <arg value="/media/ra/_work/ra/ITMO/OPI/lab3/web-lab3/music/surprise.mp3"/>
+        </exec>
+    </target>
+
+    <target name="build" depends="sad_build, music"/>
 
     <!-- Очистка -->
     <target name="clean" description="Удаляет все сгенерированные файлы и зависимости">
