@@ -1,10 +1,10 @@
-package com.example.beans;
+package com.roma.beans;
 
-import com.example.services.CheckerModelService;
-import com.example.services.EntityModelService;
-import com.example.services.ParsParamsService;
-import com.example.data.common.customException.ValidException;
-import com.example.data.models.MyEntityModel;
+import com.roma.services.CheckerModelService;
+import com.roma.services.EntityModelService;
+import com.roma.services.ParsParamsService;
+import com.roma.data.common.customException.ValidException;
+import com.roma.data.models.MyEntityModel;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Named;
 import lombok.Getter;

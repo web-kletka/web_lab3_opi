@@ -4,6 +4,7 @@
         <conf name="default" visibility="public"/>
         <conf name="compile" visibility="public"/>
         <conf name="provided" visibility="public"/>
+        <conf name="test" visibility="public"/>
     </configurations>
     <dependencies>
         <!-- Compile scope -->
@@ -24,5 +25,10 @@
         <dependency org="jakarta.platform" name="jakarta.jakartaee-web-api" rev="10.0.0" conf="provided->default"/>
         <dependency org="jakarta.el" name="jakarta.el-api" rev="5.0.0" conf="provided->default"/>
         <dependency org="jakarta.enterprise" name="jakarta.enterprise.cdi-api" rev="4.0.0" conf="provided->default"/>
+
+        <!-- Test scope -->
+        <dependency org="org.junit.jupiter" name="junit-jupiter-api" rev="5.9.2" conf="test->default"/>
+        <dependency org="org.junit.jupiter" name="junit-jupiter-engine" rev="5.9.2" conf="test->default"/>
+        <dependency org="org.junit.platform" name="junit-platform-launcher" rev="1.9.2" conf="test->default"/>
     </dependencies>
 </ivy-module>

@@ -1,7 +1,7 @@
-package com.example.services;
+package com.roma.services;
 
-import com.example.data.dao.EntityModelDao;
-import com.example.data.models.MyEntityModel;
+import com.roma.data.dao.EntityModelDao;
+import com.roma.data.models.MyEntityModel;
 import lombok.NoArgsConstructor;
 
 import java.util.List;

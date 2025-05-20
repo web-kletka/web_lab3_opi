@@ -1,4 +1,4 @@
-package com.example.beans;
+package com.roma.beans;
 
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.context.FacesContext;

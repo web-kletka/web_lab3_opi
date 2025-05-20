@@ -1,4 +1,4 @@
-package com.example.data.dao;
+package com.roma.data.dao;
 
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;

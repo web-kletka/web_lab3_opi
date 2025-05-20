@@ -7,33 +7,74 @@
     <path id="ivy.lib.path">
         <pathelement location="${basedir}/lib/ivy-2.5.2.jar"/>
     </path>
-    <taskdef resource="org/apache/ivy/ant/antlib.xml"
-             uri="antlib:org.apache.ivy.ant"
-             classpathref="ivy.lib.path"/>
+    <path id="compile.classpath">
+        <fileset dir="${lib.dir}/compile" includes="**/*.jar"/>
+        <fileset dir="${lib.dir}/provided" includes="**/*.jar"/>
+        <fileset dir="${lib.dir}/test" includes="**/*.jar"/>
+    </path>
 
-    <!-- Инициализация -->
-    <target name="init" description="Создаёт необходимые директории">
-        <mkdir dir="${build.dir}"/>
-        <mkdir dir="${classes.dir}"/>
-        <mkdir dir="${lib.dir}"/>
-    </target>
+    <!-- Основной classpath для компиляции -->
+    <path id="compile.classpath">
+        <fileset dir="${lib.dir}/compile" includes="**/*.jar"/>
+        <fileset dir="${lib.dir}/provided" includes="**/*.jar"/>
+    </path>
+
+    <!-- Classpath для тестов (добавляет основные классы) -->
+    <path id="test.classpath">
+        <path refid="compile.classpath"/>
+        <pathelement location="${main.classes.dir}"/>
+        <pathelement location="${test.classes.dir}"/>
+        <fileset dir="${lib.dir}/test" includes="**/*.jar"/>
+    </path>
 
     <!-- Загрузка зависимостей через Ivy -->
     <target name="resolve" depends="init" description="Загружает зависимости">
         <ivy:settings file="${basedir}/ivysettings.xml"/>
         <ivy:resolve/>
         <ivy:retrieve pattern="${lib.dir}/[conf]/[artifact]-[revision]-[type].[ext]"
-                      conf="compile,provided"/>
+                      conf="compile,provided,test"/>
     </target>
+
+    <!-- Инициализация -->
+    <target name="init" description="Создаёт необходимые директории">
+        <mkdir dir="${build.dir}"/>
+        <mkdir dir="${main.classes.dir}"/>
+        <mkdir dir="${lib.dir}"/>
+    </target>
+
+    <target name="init_test" depends="init" description="Создаёт тестовые директории">
+        <mkdir dir="${test.classes.dir}"/>
+        <mkdir dir="${test.reports.dir}"/>
+    </target>
+
+
+    <!-- Компиляция тестов -->
+    <target name="compile_tests" depends="compile,init_test">
+        <javac srcdir="${test.dir}" destdir="${test.classes.dir}"
+               source="17" target="17" includeantruntime="false">
+            <classpath refid="test.classpath"/>
+        </javac>
+    </target>
+
+    <!-- Запуск тестов (JUnit 5) -->
+    <target name="run_tests" depends="compile_tests">
+        <junitlauncher haltOnFailure="false" printSummary="true">
+            <classpath refid="test.classpath"/>
+            <testclasses outputdir="${test.reports.dir}">
+                <fileset dir="${test.classes.dir}">
+                    <include name="**/*Test.class"/>
+                </fileset>
+            </testclasses>
+        </junitlauncher>
+        <echo message="Тесты завершены. Отчеты в ${test.reports.dir}"/>
+    </target>
+
+    <target name="test" depends="run_tests, music" description="Запуск всех тестов"/>
+
 
     <!-- Компиляция -->
     <target name="compile" depends="resolve" description="Компилирует исходный код">
-        <path id="compile.classpath">
-            <fileset dir="${lib.dir}/compile" includes="**/*.jar"/>
-            <fileset dir="${lib.dir}/provided" includes="**/*.jar"/>
-        </path>
-
-        <javac srcdir="${src.dir}" destdir="${classes.dir}"
+        <javac srcdir="${src.dir}" destdir="${main.classes.dir}"
                source="17" target="17" includeantruntime="false">
             <classpath refid="compile.classpath"/>
         </javac>
@@ -49,7 +90,7 @@
         <copy todir="${build.dir.lib}">
             <fileset dir="${lib.dir}"/>
         </copy>
-        <copy todir="${classes.dir}">
+        <copy todir="${main.classes.dir}">
             <fileset dir="${resources.dir}"/>
         </copy>
         <manifest file="${build.manifest.dir}">
@@ -58,12 +99,12 @@
             <attribute name="Main-Class" value="NoClass"/>
         </manifest>
         <jar destfile="${build.dir}/${ant.project.name}.jar" manifest="${build.manifest.dir}">
-            <fileset dir="${classes.dir}"/>
+            <fileset dir="${main.classes.dir}"/>
         </jar>
         <war destfile="${war.file}" webxml="${webapp.dir}/WEB-INF/web.xml">
             <fileset dir="${webapp.dir}"/>
             <lib dir="${lib.dir}/compile"/>
-            <classes dir="${classes.dir}"/>
+            <classes dir="${main.classes.dir}"/>
         </war>
 
         <echo message="----- BUILD COMPLETED -----"/>
@@ -73,7 +114,7 @@
     <target name="music">
         <echo message="----- BUILD COMPLETED! Starting music... -----"/>
         <exec executable="mpg123" osfamily="unix">
-            <arg value="/media/ra/_work/ra/ITMO/OPI/lab3/web-lab3/music/surprise.mp3"/>
+            <arg value="${music.dir}/surprise.mp3"/>
         </exec>
     </target>
 
