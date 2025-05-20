@@ -1,0 +1,28 @@
+<ivy-module version="2.0">
+    <info organisation="org.example" module="web-lab3"/>
+    <configurations>
+        <conf name="default" visibility="public"/>
+        <conf name="compile" visibility="public"/>
+        <conf name="provided" visibility="public"/>
+    </configurations>
+    <dependencies>
+        <!-- Compile scope -->
+        <dependency org="jakarta.servlet.jsp.jstl" name="jakarta.servlet.jsp.jstl-api" rev="2.0.0" conf="compile->default"/>
+        <dependency org="org.json" name="json" rev="20231013" conf="compile->default"/>
+        <dependency org="org.glassfish" name="jakarta.faces" rev="4.0.4" conf="compile->default"/>
+        <dependency org="jakarta.persistence" name="jakarta.persistence-api" rev="3.1.0" conf="compile->default"/>
+        <dependency org="org.hibernate.orm" name="hibernate-core" rev="6.6.1.Final" conf="compile->default"/>
+        <dependency org="org.postgresql" name="postgresql" rev="42.7.2" conf="compile->default"/>
+        <dependency org="jakarta.validation" name="jakarta.validation-api" rev="3.0.2" conf="compile->default"/>
+        <dependency org="org.hibernate.validator" name="hibernate-validator" rev="8.0.1.Final" conf="compile->default"/>
+        <dependency org="org.apache.logging.log4j" name="log4j-core" rev="2.17.1" conf="compile->default"/>
+
+        <!-- Provided scope (не включаются в WAR) -->
+        <dependency org="jakarta.servlet" name="jakarta.servlet-api" rev="6.0.0" conf="provided->default"/>
+        <dependency org="jakarta.servlet.jsp" name="jakarta.servlet.jsp-api" rev="3.1.0" conf="provided->default"/>
+        <dependency org="org.projectlombok" name="lombok" rev="1.18.28" conf="provided->default"/>
+        <dependency org="jakarta.platform" name="jakarta.jakartaee-web-api" rev="10.0.0" conf="provided->default"/>
+        <dependency org="jakarta.el" name="jakarta.el-api" rev="5.0.0" conf="provided->default"/>
+        <dependency org="jakarta.enterprise" name="jakarta.enterprise.cdi-api" rev="4.0.0" conf="provided->default"/>
+    </dependencies>
+</ivy-module>
