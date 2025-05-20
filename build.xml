@@ -4,13 +4,6 @@
     <property file="build.properties"/>
     <!-- Определение свойств -->
 
-    <path id="ivy.lib.path">
-        <pathelement location="${basedir}/lib/ivy-2.5.2.jar"/>
-    </path>
-    <taskdef resource="org/apache/ivy/ant/antlib.xml"
-             uri="antlib:org.apache.ivy.ant"
-             classpathref="ivy.lib.path"/>
-
     <!-- Инициализация -->
     <target name="init" description="Создаёт необходимые директории">
         <mkdir dir="${build.dir}"/>
@@ -73,7 +66,7 @@
     <target name="music">
         <echo message="----- BUILD COMPLETED! Starting music... -----"/>
         <exec executable="mpg123" osfamily="unix">
-            <arg value="/media/ra/_work/ra/ITMO/OPI/lab3/web-lab3/music/surprise.mp3"/>
+            <arg value="${src.music}/surprise.mp3"/>
         </exec>
     </target>
 
@@ -87,4 +80,15 @@
         </delete>
         <delete dir="${build.dir}"/>
     </target>
+
+    <!-- Test -->
+    <target name="xml">
+        <echo message="----- Validating all XML files... -----"/>
+        <xmlvalidate failonerror="true" lenient="true">
+            <fileset dir="${basedir}" includes="**/*.xml" excludes=".idea/**,lib/**,build/**"/>
+        </xmlvalidate>
+        <echo message="----- XML validation completed! -----"/>
+    </target>
+
+
 </project>
