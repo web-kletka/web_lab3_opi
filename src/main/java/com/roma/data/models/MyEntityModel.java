@@ -1,4 +1,4 @@
-package com.example.data.models;
+package com.roma.data.models;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

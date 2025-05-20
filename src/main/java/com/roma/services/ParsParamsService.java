@@ -1,7 +1,7 @@
-package com.example.services;
+package com.roma.services;
 
 import lombok.Getter;
-import com.example.data.common.customException.ValidException;
+import com.roma.data.common.customException.ValidException;
 
 import java.util.HashMap;
 

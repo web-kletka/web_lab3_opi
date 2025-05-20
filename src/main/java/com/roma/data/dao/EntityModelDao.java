@@ -1,6 +1,6 @@
-package com.example.data.dao;
+package com.roma.data.dao;
 
-import com.example.data.models.MyEntityModel;
+import com.roma.data.models.MyEntityModel;
 
 import jakarta.persistence.EntityManager;
 import java.util.List;

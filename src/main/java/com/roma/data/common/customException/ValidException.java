@@ -1,4 +1,4 @@
-package com.example.data.common.customException;
+package com.roma.data.common.customException;
 
 public class ValidException extends Exception{
     public ValidException(String message) {
