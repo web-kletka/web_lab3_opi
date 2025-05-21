@@ -25,25 +25,16 @@ public class LocalService {
             try {
                 ResourceBundle bundle = ResourceBundle.getBundle("messages", new Locale(lang));
                 if (bundle != null) {
-                    System.out.println("Successfully loaded bundle for locale: " + lang);
                     return new Locale(lang);
                 }
-            } catch (Exception e) {
-                System.err.println("Failed to load bundle for locale: " + lang + ", error: " + e.getMessage());
-            }
+            } catch (Exception ignored) {}
         }
-        System.out.println("---------------------- -------------------- Falling back to default locale: en");
         return new Locale("en");
     }
 
     private void getResourceBundle() {
         Locale locale = getResourceLocale();
-        try {
-            resourceBundle = ResourceBundle.getBundle("native2ascii.messages", locale);
-        } catch (Exception e) {
-            System.err.println("Error loading resource bundle for locale: " + locale + ", error: " + e.getMessage());
-            throw new RuntimeException("Failed to load resource bundle for locale: " + locale, e);
-        }
+        resourceBundle = ResourceBundle.getBundle("native2ascii.messages", locale);
     }
 
     public ResourceBundle getMessage() {

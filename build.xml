@@ -95,10 +95,9 @@
 
     <!--  Отчистка вообще всего  -->
     <target name="clean_all" depends="clean" description="Удаление вообще всех вспомогательных файлов">
-        <delete dir="${test.reports.dir}"/>
+        <delete dir="${test.reports.dir}/html"/>
         <delete dir="${native2ascii.resources}"/>
         <delete dir="${team.dir}"/>
-        <delete dir="${lib.dir}"/>
     </target>
 
     <!--  Компиляция тестов  -->
@@ -111,7 +110,7 @@
     </target>
 
     <!--  Запуск тестов  -->
-    <target name="test" depends="compile_tests" description="Запуск тестов">
+    <target name="test" depends="compile_tests, native2ascii" description="Запуск тестов">
         <mkdir dir="${test.reports.dir}"/>
         <copy todir="${build.main.classes.dir}">
             <fileset dir="${resources.dir}"/>
