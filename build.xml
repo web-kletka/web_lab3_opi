@@ -4,14 +4,13 @@
     <property file="build.properties"/>
     <!-- Определение свойств -->
 
+
     <path id="ivy.lib.path">
-        <pathelement location="${basedir}/lib/ivy-2.5.2.jar"/>
+        <pathelement location="${ivy.lib.dir}/ivy-2.5.2.jar"/>
     </path>
-    <path id="compile.classpath">
-        <fileset dir="${lib.dir}/compile" includes="**/*.jar"/>
-        <fileset dir="${lib.dir}/provided" includes="**/*.jar"/>
-        <fileset dir="${lib.dir}/test" includes="**/*.jar"/>
-    </path>
+    <taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" classpathref="ivy.lib.path"/>
+
+
 
     <!-- Основной classpath для компиляции -->
     <path id="compile.classpath">
@@ -58,18 +57,33 @@
 
     <!-- Запуск тестов (JUnit 5) -->
     <target name="run_tests" depends="compile_tests">
+        <mkdir dir="${test.reports.dir}"/>
+
         <junitlauncher haltOnFailure="false" printSummary="true">
             <classpath refid="test.classpath"/>
+
             <testclasses outputdir="${test.reports.dir}">
                 <fileset dir="${test.classes.dir}">
-                    <include name="**/*Test.class"/>
+                    <include name="**/*Test*.class"/>
+                    <exclude name="**/*$*.class"/>
                 </fileset>
             </testclasses>
+
+            <listener type="legacy-xml" sendSysOut="true" sendSysErr="true"/>
         </junitlauncher>
-        <echo message="Тесты завершены. Отчеты в ${test.reports.dir}"/>
+        <junitreport todir="${test.reports.dir}">
+            <fileset dir="${test.reports.dir}">
+                <include name="TEST-*.xml"/>
+            </fileset>
+            <report format="frames" todir="${test.reports.dir}/html"/>
+        </junitreport>
     </target>
 
-    <target name="test" depends="run_tests, music" description="Запуск всех тестов"/>
+    <target name="clean_test">
+        <delete dir="${test.reports.dir}"/>
+    </target>
+
+    <target name="test" depends="run_tests" description="Запуск всех тестов"/>
 
 
     <!-- Компиляция -->
@@ -82,7 +96,7 @@
 
 
     <!-- BUILD -->
-    <target name="sad_build" depends="compile">
+    <target name="sad_build" depends="clean, compile">
         <echo message="----- BUILD STARTED -----"/>
         <copy todir="${build.dir}">
             <fileset dir="${webapp.dir}"/>
@@ -114,7 +128,7 @@
     <target name="music">
         <echo message="----- BUILD COMPLETED! Starting music... -----"/>
         <exec executable="mpg123" osfamily="unix">
-            <arg value="${music.dir}/surprise.mp3"/>
+<!--            <arg value="${music.dir}/surprise.mp3"/>-->
         </exec>
     </target>
 
@@ -129,13 +143,48 @@
         <delete dir="${build.dir}"/>
     </target>
 
-    <!-- Test -->
+    <!-- Xml -->
     <target name="xml">
         <echo message="----- Validating all XML files... -----"/>
         <xmlvalidate failonerror="true" lenient="true">
             <fileset dir="${basedir}" includes="**/*.xml" excludes=".idea/**,lib/**,build/**"/>
         </xmlvalidate>
         <echo message="----- XML validation completed! -----"/>
+    </target>
+
+    <target name="lang">
+        <condition property="lang" value="${lang}" else="${locale.default}">
+            <isset property="lang"/>
+        </condition>
+
+        <echo message="Locale: ${lang}"/>
+        <available file="${message.resources}/messages_${lang}.properties" property="file.exists"/>
+        <fail message="File ${message.resources}/messages_${lang}.properties does not exist!"
+              unless="file.exists"/>
+
+        <echo message="Selected locale: ${lang}"/>
+    </target>
+
+    <target name="native2ascii" depends="lang">
+        <echo message="----- NATIVE2ASCII STARTED -----"/>
+        <delete dir="${native2ascii.resources}"/>
+        <native2ascii src="${message.resources}"
+                      dest="${native2ascii.resources}"
+                      includes="messages_${lang}.properties"
+                      encoding="UTF-8"/>
+        <echo message="----- NATIVE2ASCII COMPLETED -----"/>
+    </target>
+
+    <target name="n2a" depends="native2ascii"/>
+
+    <target name="env" depends="n2a">
+        <echo message="----- ENV STARTED -----"/>
+        <antcall target="build"/>
+        <copy file="${build.dir}/web-lab3.war" todir="${scp.dir}"/>
+        <exec executable="sh">
+            <arg value="${env.script}"/>
+        </exec>
+        <echo message="----- ENV COMPLETED -----"/>
     </target>
 
 

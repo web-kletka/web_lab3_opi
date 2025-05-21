@@ -2,10 +2,11 @@ package com.roma.data.dao;
 
 import com.roma.data.models.MyEntityModel;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import java.util.List;
 
-
+@ApplicationScoped
 public class EntityModelDao {
 
     private final EntityManager em = JPAUtil.getEntityManagerFactory().createEntityManager();

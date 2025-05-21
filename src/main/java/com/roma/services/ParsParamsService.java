@@ -1,10 +1,12 @@
 package com.roma.services;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import lombok.Getter;
 import com.roma.data.common.customException.ValidException;
 
 import java.util.HashMap;
 
+@ApplicationScoped
 @Getter
 public class ParsParamsService {
     private Float x = null;

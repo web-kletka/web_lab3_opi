@@ -4,6 +4,7 @@ import com.roma.data.models.MyEntityModel;
 import com.roma.services.EntityModelService;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.context.FacesContext;
+import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,7 +19,8 @@ import java.util.List;
 @Setter
 public class TableBean implements Serializable {
 
-    private final EntityModelService entityModelService = new EntityModelService();
+    @Inject
+    private EntityModelService entityModelService;
 
     public void clearTable(){
         entityModelService.clearTable();
