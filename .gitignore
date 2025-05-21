@@ -2,3 +2,5 @@ lib
 .idea
 build
 *.imi
+team_build
+test_reports/html

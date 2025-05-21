@@ -1,14 +1,12 @@
 package com.roma.data.models;
 
 import com.roma.services.LocalService;
-import jakarta.faces.context.FacesContext;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
-import java.util.ResourceBundle;
 
 @Getter
 @Entity
@@ -56,7 +54,7 @@ public class MyEntityModel {
     @Override
     public String toString() {
         if (result) return LocalService.getInstance().getMessage().getString("text.success.result.got.it");
-        return LocalService.getInstance().getMessage().getString("text.success.result.past");
+        return LocalService.getInstance().getMessage().getString("text.success.result.missed");
     }
 }
 

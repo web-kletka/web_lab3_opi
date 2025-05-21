@@ -6,6 +6,7 @@ import com.roma.services.LocalService;
 import com.roma.services.ParsParamsService;
 import com.roma.data.common.customException.ValidException;
 import com.roma.data.models.MyEntityModel;
+import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.context.FacesContext;
 import jakarta.inject.Inject;
@@ -15,8 +16,6 @@ import lombok.Setter;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.Locale;
-import java.util.ResourceBundle;
 
 @Named("CheckerBean")
 @SessionScoped
@@ -24,7 +23,7 @@ public class CheckerBean implements Serializable {
 
     @Getter
     @Setter
-    private String result = LocalService.getInstance().getMessage().getString("text.bad.result");
+    private String result;
 
     @Inject
     private EntityModelService entityModelService;
@@ -32,6 +31,11 @@ public class CheckerBean implements Serializable {
     private CheckerModelService checkerModelService;
     @Inject
     private ParsParamsService parsParamsService ;
+
+    @PostConstruct
+    public void init() {
+        result = LocalService.getInstance().getMessage().getString("text.bad.result");
+    }
 
     public void check(String x, String y, String z, String r) {
         long startTime = System.currentTimeMillis();

@@ -24,4 +24,9 @@
         <welcome-file>main.xhtml</welcome-file>
     </welcome-file-list>
 
+    <context-param>
+        <param-name>javax.faces.LOCALE</param-name>
+        <param-value>en</param-value>
+    </context-param>
+
 </web-app>

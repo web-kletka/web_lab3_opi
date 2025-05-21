@@ -2,70 +2,126 @@
          xmlns:ivy="antlib:org.apache.ivy.ant">
 
     <property file="build.properties"/>
-    <!-- Определение свойств -->
 
-
+    <!--  Определение свойств  -->
     <path id="ivy.lib.path">
         <pathelement location="${ivy.lib.dir}/ivy-2.5.2.jar"/>
     </path>
     <taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" classpathref="ivy.lib.path"/>
 
-
-
-    <!-- Основной classpath для компиляции -->
+    <!--  Основной classpath для компиляции  -->
     <path id="compile.classpath">
         <fileset dir="${lib.dir}/compile" includes="**/*.jar"/>
         <fileset dir="${lib.dir}/provided" includes="**/*.jar"/>
     </path>
 
-    <!-- Classpath для тестов (добавляет основные классы) -->
+    <!--  Classpath для тестов (добавляет основные классы)  -->
     <path id="test.classpath">
         <path refid="compile.classpath"/>
-        <pathelement location="${main.classes.dir}"/>
+        <pathelement location="${build.main.classes.dir}"/>
         <pathelement location="${test.classes.dir}"/>
         <fileset dir="${lib.dir}/test" includes="**/*.jar"/>
     </path>
 
-    <!-- Загрузка зависимостей через Ivy -->
+    <!--  Загрузка зависимостей через Ivy  -->
     <target name="resolve" depends="init" description="Загружает зависимости">
         <ivy:settings file="${basedir}/ivysettings.xml"/>
         <ivy:resolve/>
         <ivy:retrieve pattern="${lib.dir}/[conf]/[artifact]-[revision]-[type].[ext]"
                       conf="compile,provided,test"/>
+        <echo message="-- OK --"/>
     </target>
 
-    <!-- Инициализация -->
+    <!--  Инициализация build директории  -->
     <target name="init" description="Создаёт необходимые директории">
         <mkdir dir="${build.dir}"/>
-        <mkdir dir="${main.classes.dir}"/>
+        <mkdir dir="${build.main.classes.dir}"/>
         <mkdir dir="${lib.dir}"/>
+        <echo message="-- OK --"/>
     </target>
 
+    <!--  Инициализация директории для тестов  -->
     <target name="init_test" depends="init" description="Создаёт тестовые директории">
         <mkdir dir="${test.classes.dir}"/>
         <mkdir dir="${test.reports.dir}"/>
+        <echo message="-- OK --"/>
     </target>
 
+    <!--  Компиляция  -->
+    <target name="compile" depends="resolve" description="Компилирует исходный код">
+        <javac srcdir="${src.dir}" destdir="${build.main.classes.dir}"
+               source="17" target="17" includeantruntime="false">
+            <classpath refid="compile.classpath"/>
+        </javac>
+        <echo message="-- OK --"/>
+    </target>
 
-    <!-- Компиляция тестов -->
-    <target name="compile_tests" depends="compile,init_test">
+    <!--  Полная сборка проекта  -->
+    <target name="build" depends="clean, compile" description="Полная сборка всего проекта в war и jar архивы">
+        <copy todir="${build.dir}">
+            <fileset dir="${webapp.dir}"/>
+        </copy>
+        <copy todir="${build.dir.lib}">
+            <fileset dir="${lib.dir}"/>
+        </copy>
+        <copy todir="${build.main.classes.dir}">
+            <fileset dir="${resources.dir}"/>
+        </copy>
+        <manifest file="${build.manifest.dir}">
+            <attribute name="Created-By" value="Kanye West"/>
+            <attribute name="Manifest-Version" value="1.0"/>
+            <attribute name="Main-Class" value="NoClass"/>
+        </manifest>
+        <jar destfile="${build.dir}/${ant.project.name}.jar" manifest="${build.manifest.dir}">
+            <fileset dir="${build.main.classes.dir}"/>
+        </jar>
+        <war destfile="${war.file}" webxml="${webapp.dir}/WEB-INF/web.xml">
+            <fileset dir="${webapp.dir}"/>
+            <lib dir="${lib.dir}/compile"/>
+            <classes dir="${build.main.classes.dir}"/>
+        </war>
+        <echo message="-- OK --"/>
+    </target>
+
+    <!--  Очистка  -->
+    <target name="clean" description="Удаляет все сгенерированные файлы и зависимости">
+        <delete includeemptydirs="true" failonerror="false">
+            <fileset dir="${build.dir}" includes="**/*"/>
+            <fileset dir="${lib.dir}" includes="**/*"/>
+        </delete>
+        <delete dir="${build.dir}"/>
+        <echo message="-- OK --"/>
+    </target>
+
+    <!--  Отчистка вообще всего  -->
+    <target name="clean_all" depends="clean" description="Удаление вообще всех вспомогательных файлов">
+        <delete dir="${test.reports.dir}"/>
+        <delete dir="${native2ascii.resources}"/>
+        <delete dir="${team.dir}"/>
+        <delete dir="${lib.dir}"/>
+    </target>
+
+    <!--  Компиляция тестов  -->
+    <target name="compile_tests" depends="compile,init_test" description="Компиляция тестов и всего что с ними связана">
         <javac srcdir="${test.dir}" destdir="${test.classes.dir}"
                source="17" target="17" includeantruntime="false">
             <classpath refid="test.classpath"/>
         </javac>
+        <echo message="-- OK --"/>
     </target>
 
-    <!-- Запуск тестов (JUnit 5) -->
-    <target name="run_tests" depends="compile_tests">
+    <!--  Запуск тестов  -->
+    <target name="test" depends="compile_tests" description="Запуск тестов">
         <mkdir dir="${test.reports.dir}"/>
-
+        <copy todir="${build.main.classes.dir}">
+            <fileset dir="${resources.dir}"/>
+        </copy>
         <junitlauncher haltOnFailure="false" printSummary="true">
             <classpath refid="test.classpath"/>
 
             <testclasses outputdir="${test.reports.dir}">
                 <fileset dir="${test.classes.dir}">
                     <include name="**/*Test*.class"/>
-                    <exclude name="**/*$*.class"/>
                 </fileset>
             </testclasses>
 
@@ -77,115 +133,148 @@
             </fileset>
             <report format="frames" todir="${test.reports.dir}/html"/>
         </junitreport>
+        <echo message="-- OK --"/>
     </target>
 
-    <target name="clean_test">
+
+
+    <!--  Отчистка отчётов о тестах  -->
+    <target name="clean_test" description="Удаление всех отчётов о тестах">
         <delete dir="${test.reports.dir}"/>
+        <echo message="-- OK --"/>
     </target>
 
-    <target name="test" depends="run_tests" description="Запуск всех тестов"/>
-
-
-    <!-- Компиляция -->
-    <target name="compile" depends="resolve" description="Компилирует исходный код">
-        <javac srcdir="${src.dir}" destdir="${main.classes.dir}"
-               source="17" target="17" includeantruntime="false">
-            <classpath refid="compile.classpath"/>
-        </javac>
-    </target>
-
-
-    <!-- BUILD -->
-    <target name="sad_build" depends="clean, compile">
-        <echo message="----- BUILD STARTED -----"/>
-        <copy todir="${build.dir}">
-            <fileset dir="${webapp.dir}"/>
-        </copy>
-        <copy todir="${build.dir.lib}">
-            <fileset dir="${lib.dir}"/>
-        </copy>
-        <copy todir="${main.classes.dir}">
-            <fileset dir="${resources.dir}"/>
-        </copy>
-        <manifest file="${build.manifest.dir}">
-            <attribute name="Created-By" value="Kanye West"/>
-            <attribute name="Manifest-Version" value="1.0"/>
-            <attribute name="Main-Class" value="NoClass"/>
-        </manifest>
-        <jar destfile="${build.dir}/${ant.project.name}.jar" manifest="${build.manifest.dir}">
-            <fileset dir="${main.classes.dir}"/>
-        </jar>
-        <war destfile="${war.file}" webxml="${webapp.dir}/WEB-INF/web.xml">
-            <fileset dir="${webapp.dir}"/>
-            <lib dir="${lib.dir}/compile"/>
-            <classes dir="${main.classes.dir}"/>
-        </war>
-
-        <echo message="----- BUILD COMPLETED -----"/>
-    </target>
-
-    <!-- Музыка -->
-    <target name="music">
-        <echo message="----- BUILD COMPLETED! Starting music... -----"/>
+    <!--  Музыка  -->
+    <target name="music" description="Проигрыш музыки из файла сюрприз">
         <exec executable="mpg123" osfamily="unix">
-<!--            <arg value="${music.dir}/surprise.mp3"/>-->
+              <arg value="${music.dir}/surprise.mp3"/>
         </exec>
+        <echo message="-- OK --"/>
     </target>
 
-    <target name="build" depends="sad_build, music"/>
-
-    <!-- Очистка -->
-    <target name="clean" description="Удаляет все сгенерированные файлы и зависимости">
-        <delete includeemptydirs="true" failonerror="false">
-            <fileset dir="${build.dir}" includes="**/*"/>
-            <fileset dir="${lib.dir}" includes="**/*"/>
-        </delete>
-        <delete dir="${build.dir}"/>
+    <!--  Музыкальная сборка  -->
+    <target name="music_build" depends="build, music" description="Проигрыш музыки после сборки проекта">
+        <echo message="-- OK --"/>
     </target>
 
-    <!-- Xml -->
-    <target name="xml">
-        <echo message="----- Validating all XML files... -----"/>
+    <!--  Проверка на валидность xml файлов  -->
+    <target name="xml" description="Проверка на валидность xml файлов">
         <xmlvalidate failonerror="true" lenient="true">
             <fileset dir="${basedir}" includes="**/*.xml" excludes=".idea/**,lib/**,build/**"/>
         </xmlvalidate>
-        <echo message="----- XML validation completed! -----"/>
+        <echo message="-- OK --"/>
     </target>
 
-    <target name="lang">
+    <!--  Установка нужной локализации поддерживается ru и en  -->
+    <target name="lang" description="Установка нужной локализации через аргумент -Dlang=value (ru/en)">
         <condition property="lang" value="${lang}" else="${locale.default}">
             <isset property="lang"/>
         </condition>
-
         <echo message="Locale: ${lang}"/>
-        <available file="${message.resources}/messages_${lang}.properties" property="file.exists"/>
-        <fail message="File ${message.resources}/messages_${lang}.properties does not exist!"
-              unless="file.exists"/>
-
         <echo message="Selected locale: ${lang}"/>
+        <echo message="-- OK --"/>
     </target>
 
-    <target name="native2ascii" depends="lang">
-        <echo message="----- NATIVE2ASCII STARTED -----"/>
+    <!--  Преобразование native2ascii для копий файлов локализации  -->
+    <target name="native2ascii" depends="lang" description="Преобразование native2ascii для копий файлов локализации, зависит от lang">
         <delete dir="${native2ascii.resources}"/>
         <native2ascii src="${message.resources}"
                       dest="${native2ascii.resources}"
                       includes="messages_${lang}.properties"
                       encoding="UTF-8"/>
-        <echo message="----- NATIVE2ASCII COMPLETED -----"/>
+        <echo message="-- OK --"/>
     </target>
 
-    <target name="n2a" depends="native2ascii"/>
+    <!--  Сокращение native2ascii -->
+    <target name="n2a" depends="native2ascii" description="Сокращение native2ascii">
+        <echo message="-- OK --"/>
+    </target>
 
-    <target name="env" depends="n2a">
-        <echo message="----- ENV STARTED -----"/>
+    <!--  Запуск проекта на wild-fly  -->
+    <target name="env" depends="n2a" description="Запуск проекта на wild-fly" >
         <antcall target="build"/>
         <copy file="${build.dir}/web-lab3.war" todir="${scp.dir}"/>
         <exec executable="sh">
             <arg value="${env.script}"/>
         </exec>
-        <echo message="----- ENV COMPLETED -----"/>
+        <echo message="-- OK --"/>
     </target>
 
+    <!--  Получение и архивирование 2 предыдущих ревизий в svn репозитории и упаковка jar ников в zip архив  -->
+    <target name="team" description="Архивирование 2 предыдущих ревизий в zip архив">
+        <mkdir dir="${team.dir}" />
+        <exec executable="svn">
+            <arg value="export" />
+            <arg value="-r" />
+            <arg value="${svn.revision1}" />
+            <arg value="${svn.repo.url}" />
+            <arg value="team_build/rev1" />
+        </exec>
+        <exec executable="svn">
+            <arg value="export" />
+            <arg value="-r" />
+            <arg value="${svn.revision2}" />
+            <arg value="${svn.repo.url}" />
+            <arg value="team_build/rev2" />
+        </exec>
+        <ant dir="${team.dir}/rev1" target="build" inheritAll="false" />
+        <ant dir="${team.dir}/rev2" target="build" inheritAll="false" />
+        <copy todir="${team.dir}/output">
+            <fileset dir="${team.dir}/rev1/${build.dir}" includes="*.jar" />
+            <mapper type="glob" from="*.jar" to="rev1-*.jar" />
+        </copy>
+        <copy todir="${team.dir}/output">
+            <fileset dir="${team.dir}/rev2/${build.dir}" includes="*.jar" />
+            <mapper type="glob" from="*.jar" to="rev2-*.jar" />
+        </copy>
+        <zip destfile="${team.dir}/revisions.zip">
+            <fileset dir="${team.dir}/output" />
+        </zip>
+        <delete dir="${team.dir}/rev1"/>
+        <delete dir="${team.dir}/rev2"/>
+        <echo message="-- OK --"/>
+    </target>
 
+    <!--  Запуск тестов и в случае успешного прохождения их коммит в git  -->
+    <target name="report" depends="test" description="Запуск тестов и в случае успешного прохождения их коммит в git ">
+        <condition property="tests.report.exists">
+            <resourcecount when="more" count="0">
+                <fileset dir="${test.reports.dir}" includes="TEST-*.xml"/>
+            </resourcecount>
+        </condition>
+        <echo message="-- OK --"/>
+        <antcall target="commit-report-if-exists"/>
+    </target>
+
+    <!--  Коммит отчёта если он есть  -->
+    <target name="commit-report-if-exists" if="tests.report.exists">
+        <echo message="Found JUnit reports. Attempting Git commit..."/>
+
+        <exec executable="git" outputproperty="git.status" failonerror="false">
+            <arg value="status"/>
+            <arg value="--porcelain"/>
+        </exec>
+
+        <condition property="git.has.changes">
+            <not>
+                <equals arg1="${git.status}" arg2="" trim="true"/>
+            </not>
+        </condition>
+        <echo message="-- OK --"/>
+        <antcall target="git-commit-if-changes"/>
+    </target>
+
+    <!--  Коммит отчёта если в нём есть изменения  -->
+    <target name="git-commit-if-changes" if="git.has.changes">
+        <exec executable="git" failonerror="true">
+            <arg value="add"/>
+            <arg value="${test.reports.dir}/TEST-*.xml"/>
+        </exec>
+        <exec executable="git" failonerror="true">
+            <arg value="commit"/>
+            <arg value="-m"/>
+            <arg value="Add tests"/>
+        </exec>
+        <echo message="-- OK --"/>
+    </target>
 </project>

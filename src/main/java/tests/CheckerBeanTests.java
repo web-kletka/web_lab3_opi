@@ -5,6 +5,7 @@ import com.roma.data.common.customException.ValidException;
 import com.roma.data.models.MyEntityModel;
 import com.roma.services.CheckerModelService;
 import com.roma.services.EntityModelService;
+import com.roma.services.LocalService;
 import com.roma.services.ParsParamsService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,8 +30,12 @@ class CheckerBeanTests {
     @Mock
     private ParsParamsService parsParamsService;
 
+    @Mock
+    private LocalService localService;
+
     @InjectMocks
     private CheckerBean checkerBean;
+
 
     @Captor
     private ArgumentCaptor<MyEntityModel> modelCaptor;
@@ -39,6 +44,7 @@ class CheckerBeanTests {
     void setUp() throws Exception {
         checkerBean = new CheckerBean();
 
+        checkerBean.init();
 
         setPrivateField(checkerBean, "entityModelService", entityModelService);
         setPrivateField(checkerBean, "checkerModelService", checkerModelService);

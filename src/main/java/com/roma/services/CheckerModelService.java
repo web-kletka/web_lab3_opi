@@ -1,6 +1,5 @@
 package com.roma.services;
 
-import jakarta.annotation.ManagedBean;
 import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped

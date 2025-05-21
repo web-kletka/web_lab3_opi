@@ -8,31 +8,31 @@
     </configurations>
     <dependencies>
         <!-- Compile scope -->
-        <dependency org="jakarta.servlet.jsp.jstl" name="jakarta.servlet.jsp.jstl-api" rev="2.0.0" conf="compile->default"/>
+        <dependency org="jakarta.servlet.jsp.jstl" name="jakarta.servlet.jsp.jstl-api" rev="3.0.0" conf="compile->default"/> <!-- Обновлено до 3.0.0 -->
         <dependency org="org.json" name="json" rev="20231013" conf="compile->default"/>
-        <dependency org="org.glassfish" name="jakarta.faces" rev="4.0.4" conf="compile->default"/>
-        <dependency org="jakarta.persistence" name="jakarta.persistence-api" rev="3.1.0" conf="compile->default"/>
+        <dependency org="jakarta.persistence" name="jakarta.persistence-api" rev="3.2.0" conf="compile->default"/> <!-- Обновлено до 3.2.0 -->
         <dependency org="org.hibernate.orm" name="hibernate-core" rev="6.6.1.Final" conf="compile->default"/>
-        <dependency org="org.postgresql" name="postgresql" rev="42.7.2" conf="compile->default"/>
-        <dependency org="jakarta.validation" name="jakarta.validation-api" rev="3.0.2" conf="compile->default"/>
-        <dependency org="org.hibernate.validator" name="hibernate-validator" rev="8.0.1.Final" conf="compile->default"/>
-        <dependency org="org.apache.logging.log4j" name="log4j-core" rev="2.17.1" conf="compile->default"/>
+        <dependency org="org.postgresql" name="postgresql" rev="42.7.4" conf="compile->default"/> <!-- Обновлено до 42.7.4 -->
+        <dependency org="jakarta.validation" name="jakarta.validation-api" rev="3.1.0" conf="compile->default"/> <!-- Обновлено до 3.1.0 -->
+        <dependency org="org.hibernate.validator" name="hibernate-validator" rev="8.0.2.Final" conf="compile->default"/> <!-- Обновлено до 8.0.2.Final -->
+        <dependency org="org.apache.logging.log4j" name="log4j-core" rev="2.23.1" conf="compile->default"/> <!-- Обновлено до 2.23.1 -->
 
         <!-- Provided scope (не включаются в WAR) -->
-        <dependency org="jakarta.servlet" name="jakarta.servlet-api" rev="6.0.0" conf="provided->default"/>
-        <dependency org="jakarta.servlet.jsp" name="jakarta.servlet.jsp-api" rev="3.1.0" conf="provided->default"/>
-        <dependency org="org.projectlombok" name="lombok" rev="1.18.28" conf="provided->default"/>
+        <dependency org="jakarta.servlet" name="jakarta.servlet-api" rev="6.1.0" conf="provided->default"/> <!-- Обновлено до 6.1.0 -->
+        <dependency org="jakarta.servlet.jsp" name="jakarta.servlet.jsp-api" rev="4.0.0" conf="provided->default"/> <!-- Обновлено до 4.0.0 -->
+        <dependency org="org.projectlombok" name="lombok" rev="1.18.34" conf="provided->default"/> <!-- Обновлено до 1.18.34 -->
         <dependency org="jakarta.platform" name="jakarta.jakartaee-web-api" rev="10.0.0" conf="provided->default"/>
-        <dependency org="jakarta.el" name="jakarta.el-api" rev="5.0.0" conf="provided->default"/>
-        <dependency org="jakarta.enterprise" name="jakarta.enterprise.cdi-api" rev="4.0.0" conf="provided->default"/>
+        <dependency org="jakarta.el" name="jakarta.el-api" rev="6.0.0" conf="provided->default"/> <!-- Обновлено до 6.0.0 -->
+        <dependency org="jakarta.enterprise" name="jakarta.enterprise.cdi-api" rev="4.1.0" conf="provided->default"/> <!-- Обновлено до 4.1.0 -->
+        <dependency org="org.glassfish" name="jakarta.faces" rev="4.0.7" conf="provided->default"/> <!-- Перемещено в provided и обновлено до 4.0.7 -->
 
         <!-- Test scope -->
-        <dependency org="org.junit.jupiter" name="junit-jupiter-api" rev="5.10.0" conf="test->default"/>
-        <dependency org="org.junit.jupiter" name="junit-jupiter-engine" rev="5.10.0" conf="test->default"/>
-        <dependency org="org.junit.platform" name="junit-platform-launcher" rev="1.10.0" conf="test->default"/>
-        <dependency org="org.junit.platform" name="junit-platform-commons" rev="1.10.0" conf="test->default"/>
+        <dependency org="org.junit.jupiter" name="junit-jupiter-api" rev="5.11.3" conf="test->default"/> <!-- Обновлено до 5.11.3 -->
+        <dependency org="org.junit.jupiter" name="junit-jupiter-engine" rev="5.11.3" conf="test->default"/> <!-- Обновлено до 5.11.3 -->
+        <dependency org="org.junit.platform" name="junit-platform-launcher" rev="1.11.3" conf="test->default"/> <!-- Обновлено до 1.11.3 -->
+        <dependency org="org.junit.platform" name="junit-platform-commons" rev="1.11.3" conf="test->default"/> <!-- Обновлено до 1.11.3 -->
         <dependency org="org.opentest4j" name="opentest4j" rev="1.3.0" conf="test->default"/>
-        <dependency org="org.mockito" name="mockito-core" rev="5.4.0" conf="test->default"/>
-        <dependency org="org.mockito" name="mockito-junit-jupiter" rev="5.4.0" conf="test->default"/>
+        <dependency org="org.mockito" name="mockito-core" rev="5.14.2" conf="test->default"/> <!-- Обновлено до 5.14.2 -->
+        <dependency org="org.mockito" name="mockito-junit-jupiter" rev="5.14.2" conf="test->default"/> <!-- Обновлено до 5.14.2 -->
     </dependencies>
 </ivy-module>
