@@ -111,6 +111,6 @@ class CheckerBeanTests {
 
     @Test
     void testInitialResult() {
-        assertEquals("Не было точек на обработку", checkerBean.getResult());
+        assertEquals(LocalService.getInstance().getMessage().getString("text.bad.result"), checkerBean.getResult());
     }
 }

@@ -144,9 +144,21 @@
     </target>
 
     <!--  Музыка  -->
-    <target name="music" description="Проигрыш музыки из файла сюрприз">
+    <target name="music" description="Проигрыш случайной музыки из файлов сюрприз">
+        <tstamp>
+            <format property="current.time" pattern="SSS"/>
+        </tstamp>
+
+        <condition property="music.file" value="surprise1.mp3">
+            <matches pattern="[0-4]$" string="${current.time}"/>
+        </condition>
+        <condition property="music.file" value="surprise2.mp3">
+            <matches pattern="[5-9]$" string="${current.time}"/>
+        </condition>
+        <echo message="Selected music file: ${music.file}"/>
+
         <exec executable="mpg123" osfamily="unix">
-              <arg value="${music.dir}/surprise.mp3"/>
+            <arg value="${music.dir}/${music.file}"/>
         </exec>
         <echo message="-- OK --"/>
     </target>
